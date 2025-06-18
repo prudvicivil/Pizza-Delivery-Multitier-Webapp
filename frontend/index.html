@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario's Pizza Delivery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .pizza-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .pizza-item {
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .pizza-item:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+        
+        .pizza-item h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .pizza-item p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #e74c3c;
+        }
+        
+        .order-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .orders-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .order-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status.pending { background: #ffeaa7; color: #2d3436; }
+        .status.preparing { background: #74b9ff; color: white; }
+        .status.delivered { background: #00b894; color: white; }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍕 Mario's Pizza Delivery</h1>
+            <p>Fresh, hot pizza delivered to your door!</p>
+        </div>
+        
+        <div class="content">
+            <div class="pizza-menu">
+                <div class="pizza-item">
+                    <h3>Margherita</h3>
+                    <p>Fresh tomatoes, mozzarella, basil</p>
+                    <div class="price">$12.99</div>
+                    <button class="btn" onclick="addToCart('Margherita', 12.99)">Add to Cart</button>
+                </div>
+                
+                <div class="pizza-item">
+                    <h3>Pepperoni</h3>
+                    <p>Pepperoni, mozzarella, tomato sauce</p>
+                    <div class="price">$14.99</div>
+                    <button class="btn" onclick="addToCart('Pepperoni', 14.99)">Add to Cart</button>
+                </div>
+                
+                <div class="pizza-item">
+                    <h3>Supreme</h3>
+                    <p>Pepperoni, mushrooms, peppers, onions</p>
+                    <div class="price">$17.99</div>
+                    <button class="btn" onclick="addToCart('Supreme', 17.99)">Add to Cart</button>
+                </div>
+                
+                <div class="pizza-item">
+                    <h3>Hawaiian</h3>
+                    <p>Ham, pineapple, mozzarella</p>
+                    <div class="price">$15.99</div>
+                    <button class="btn" onclick="addToCart('Hawaiian', 15.99)">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="order-form">
+                <h2>Place Your Order</h2>
+                <div id="cart-items"></div>
+                <div id="total-price" style="font-size: 1.2em; font-weight: bold; margin: 15px 0; color: #e74c3c;"></div>
+                
+                <div class="form-group">
+                    <label for="customer-name">Your Name:</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-phone">Phone Number:</label>
+                    <input type="tel" id="customer-phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-address">Delivery Address:</label>
+                    <textarea id="customer-address" rows="3" required></textarea>
+                </div>
+                
+                <button class="btn" onclick="placeOrder()" style="width: 100%; padding: 15px; font-size: 18px;">
+                    Place Order
+                </button>
+            </div>
+            
+            <div class="orders-section">
+                <h2>Your Orders</h2>
+                <div id="orders-list">
+                    <div class="loading">Loading orders...</div>
+                </div>
+                <button class="btn" onclick="loadOrders()" style="margin-top: 15px;">Refresh Orders</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let cart = [];
+        
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartDisplay();
+        }
+        
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCartDisplay();
+        }
+        
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cart-items');
+            const totalPrice = document.getElementById('total-price');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p>Your cart is empty</p>';
+                totalPrice.innerHTML = '';
+                return;
+            }
+            
+            let html = '<h3>Cart Items:</h3>';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #ddd;">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>$${itemTotal.toFixed(2)}</span>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="removeFromCart('${item.name}')">Remove</button>
+                    </div>
+                `;
+            });
+            
+            cartItems.innerHTML = html;
+            totalPrice.innerHTML = `Total: $${total.toFixed(2)}`;
+        }
+        
+        async function placeOrder() {
+            if (cart.length === 0) {
+                alert('Please add items to your cart first!');
+                return;
+            }
+            
+            const name = document.getElementById('customer-name').value;
+            const phone = document.getElementById('customer-phone').value;
+            const address = document.getElementById('customer-address').value;
+            
+            if (!name || !phone || !address) {
+                alert('Please fill in all fields!');
+                return;
+            }
+            
+            const orderData = {
+                customerName: name,
+                customerPhone: phone,
+                customerAddress: address,
+                items: cart,
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    alert('Order placed successfully!');
+                    cart = [];
+                    updateCartDisplay();
+                    document.getElementById('customer-name').value = '';
+                    document.getElementById('customer-phone').value = '';
+                    document.getElementById('customer-address').value = '';
+                    loadOrders();
+                } else {
+                    throw new Error('Failed to place order');
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('Error placing order. Please try again.');
+            }
+        }
+        
+        async function loadOrders() {
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '<div class="loading">Loading orders...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders`);
+                const orders = await response.json();
+                
+                if (orders.length === 0) {
+                    ordersList.innerHTML = '<p>No orders found.</p>';
+                    return;
+                }
+                
+                let html = '';
+                orders.forEach(order => {
+                    html += `
+                        <div class="order-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong>Order #${order.id}</strong>
+                                <span class="status ${order.status}">${order.status}</span>
+                            </div>
+                            <p><strong>Customer:</strong> ${order.customerName}</p>
+                            <p><strong>Phone:</strong> ${order.customerPhone}</p>
+                            <p><strong>Address:</strong> ${order.customerAddress}</p>
+                            <p><strong>Items:</strong> ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}</p>
+                            <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+                            <p><strong>Order Time:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+                        </div>
+                    `;
+                });
+                
+                ordersList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                ordersList.innerHTML = '<div class="error">Error loading orders. Please try again.</div>';
+            }
+        }
+        
+        // Load orders when page loads
+        window.addEventListener('load', loadOrders);
+        updateCartDisplay();
+    </script>
+</body>
+</html>
